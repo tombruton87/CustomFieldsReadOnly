@@ -9,7 +9,7 @@
     "license": "AGPL-3.0-or-later",
     "keywords": [],
     "img": "/modules/customfieldsreadonly/img/logo.png",
-    "active": 0,
+    "active": 1,
     "order": 0,
     "providers": [
         "Modules\\CustomFieldsReadOnly\\Providers\\CustomFieldsReadOnlyServiceProvider"
