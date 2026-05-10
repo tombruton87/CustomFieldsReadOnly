@@ -56,6 +56,10 @@ The module hooks into FreeScout's event system (Eventy) to:
 - Output field state as JavaScript variables on the conversation view, which the frontend uses to disable or hide the relevant inputs
 - Register a middleware on the `web` group that intercepts the custom fields save endpoint and removes any values belonging to read-only fields before they reach the controller
 
+## Author
+
+Built by [Hamlet Digital](https://hamlet.digital.co.uk)
+
 ## License
 
 [AGPL-3.0-or-later](LICENSE) — GNU Affero General Public License v3.0 or later.
