@@ -5,9 +5,6 @@
 namespace Modules\CustomFieldsReadOnly\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-
 define('CFRO_MODULE', 'customfieldsreadonly');
 
 class CustomFieldsReadOnlyServiceProvider extends ServiceProvider
@@ -17,7 +14,6 @@ class CustomFieldsReadOnlyServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerTranslations();
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
-        $this->ensureSchemaExists();
 
         // Register middleware that strips readonly/hidden fields from web UI saves.
         $this->app['router']->pushMiddlewareToGroup(
@@ -26,28 +22,6 @@ class CustomFieldsReadOnlyServiceProvider extends ServiceProvider
         );
 
         $this->hooks();
-    }
-
-    /**
-     * Ensure both columns exist, creating them if needed.
-     * Makes the module self-installing without requiring artisan migrate.
-     */
-    protected function ensureSchemaExists()
-    {
-        try {
-            if (!Schema::hasColumn('custom_fields', 'readonly')) {
-                Schema::table('custom_fields', function (Blueprint $table) {
-                    $table->boolean('readonly')->default(false);
-                });
-            }
-            if (!Schema::hasColumn('custom_fields', 'hide_from_ui')) {
-                Schema::table('custom_fields', function (Blueprint $table) {
-                    $table->boolean('hide_from_ui')->default(false);
-                });
-            }
-        } catch (\Exception $e) {
-            // custom_fields table may not exist yet on a fresh install; safe to ignore.
-        }
     }
 
     public function hooks()
@@ -97,7 +71,7 @@ class CustomFieldsReadOnlyServiceProvider extends ServiceProvider
                             $hide_map[(string) $row->id]     = (bool) $row->hide_from_ui;
                         }
                     } catch (\Exception $e) {
-                        // columns not yet available — leave maps empty.
+                        \Log::warning('CustomFieldsReadOnly: failed to load admin field flags', ['error' => $e->getMessage()]);
                     }
                 }
                 echo 'var cfroFieldReadonly  = ' . json_encode($readonly_map) . ';' . "\n";
@@ -112,18 +86,35 @@ class CustomFieldsReadOnlyServiceProvider extends ServiceProvider
                 $readonly_ids = [];
                 $hidden_ids   = [];
                 try {
-                    $rows = \DB::table('custom_fields')
+                    $mailbox_id = 0;
+                    if (\Route::is('conversations.view')) {
+                        $conv_id = (int) \Route::current()->parameter('id');
+                        if ($conv_id) {
+                            $mailbox_id = (int) \DB::table('conversations')->where('id', $conv_id)->value('mailbox_id');
+                        }
+                    } else {
+                        $mailbox_id = (int) (
+                            \Route::current()->parameter('mailbox_id')
+                            ?? request()->route('mailbox_id')
+                            ?? request()->mailbox_id
+                            ?? 0
+                        );
+                    }
+
+                    $query = \DB::table('custom_fields')
                         ->where(function ($q) {
                             $q->where('readonly', true)->orWhere('hide_from_ui', true);
-                        })
-                        ->select('id', 'readonly', 'hide_from_ui')
-                        ->get();
-                    foreach ($rows as $row) {
-                        if ($row->readonly)    $readonly_ids[] = $row->id;
-                        if ($row->hide_from_ui) $hidden_ids[]  = $row->id;
+                        });
+                    if ($mailbox_id) {
+                        $query->where('mailbox_id', $mailbox_id);
+                    }
+
+                    foreach ($query->select('id', 'readonly', 'hide_from_ui')->get() as $row) {
+                        if ($row->readonly)     $readonly_ids[] = $row->id;
+                        if ($row->hide_from_ui) $hidden_ids[]   = $row->id;
                     }
                 } catch (\Exception $e) {
-                    // columns not yet available — leave lists empty.
+                    \Log::warning('CustomFieldsReadOnly: failed to load conversation field flags', ['error' => $e->getMessage()]);
                 }
                 echo 'var cfroReadonlyIds = ' . json_encode($readonly_ids) . ';' . "\n";
                 echo 'var cfroHiddenIds   = ' . json_encode($hidden_ids) . ';' . "\n";
@@ -134,7 +125,6 @@ class CustomFieldsReadOnlyServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->registerTranslations();
     }
 
     protected function registerConfig()

@@ -36,7 +36,7 @@ class CustomFieldsReadOnlyController extends Controller
                         ->where('id', $custom_field_id)
                         ->update(['readonly' => $readonly]);
 
-                    if ($updated === false) {
+                    if ($updated === 0) {
                         $response['msg'] = __('Custom Field not found');
                     } else {
                         $response['status']      = 'success';
@@ -45,6 +45,7 @@ class CustomFieldsReadOnlyController extends Controller
                             : __('Field set to editable');
                     }
                 } catch (\Exception $e) {
+                    \Log::error('CustomFieldsReadOnly: set_readonly failed', ['error' => $e->getMessage()]);
                     $response['msg'] = __('Error updating field');
                 }
                 break;
@@ -64,7 +65,7 @@ class CustomFieldsReadOnlyController extends Controller
                         ->where('id', $custom_field_id)
                         ->update(['hide_from_ui' => $hide_from_ui]);
 
-                    if ($updated === false) {
+                    if ($updated === 0) {
                         $response['msg'] = __('Custom Field not found');
                     } else {
                         $response['status']      = 'success';
@@ -73,6 +74,7 @@ class CustomFieldsReadOnlyController extends Controller
                             : __('Field visible in ticket view');
                     }
                 } catch (\Exception $e) {
+                    \Log::error('CustomFieldsReadOnly: set_hide_from_ui failed', ['error' => $e->getMessage()]);
                     $response['msg'] = __('Error updating field');
                 }
                 break;

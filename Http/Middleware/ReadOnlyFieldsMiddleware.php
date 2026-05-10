@@ -43,7 +43,7 @@ class ReadOnlyFieldsMiddleware
                     $request->merge(['fields' => $fields]);
                 }
             } catch (\Exception $e) {
-                // If readonly column doesn't exist yet, do nothing.
+                \Log::warning('CustomFieldsReadOnly: middleware failed to load readonly field ids', ['error' => $e->getMessage()]);
             }
         }
 
