@@ -7,12 +7,22 @@ Extends FreeScout's [Custom Fields](https://freescout.net/module/custom-fields/)
 - **API Only** — field is visible in the conversation view but all inputs are disabled. A grey "API Only" badge is shown next to the field label so agents know why it can't be edited.
 - **Hide from Ticket View** — field is invisible in the conversation view. Takes up no space. Useful for internal fields agents should never see.
 - **Middleware protection** — a server-side middleware strips read-only field values from any web UI save requests, ensuring the protection can't be bypassed by disabling JavaScript.
-- **Self-installing** — columns are added to the `custom_fields` table automatically on first boot; no manual migration step needed.
+- **Self-installing** — a bundled migration adds the required columns to the `custom_fields` table when the module is activated; no manual migration step needed.
 
 ## Requirements
 
 - FreeScout **1.8.181** or later
 - The official **Custom Fields** module must be installed and active
+
+## Compatibility
+
+Tested with:
+
+| Component  | Version        |
+|------------|----------------|
+| FreeScout  | 1.8.x          |
+| PHP        | 8.1, 8.2       |
+| Database   | MySQL, MariaDB |
 
 ## Installation
 

@@ -15,36 +15,39 @@ class ReadOnlyFieldsMiddleware
      */
     public function handle($request, Closure $next)
     {
-        // Only intercept the custom fields web-UI save endpoint.
         if (
-            \Route::currentRouteName() === 'mailboxes.custom_fields.ajax'
-            && $request->input('action') === 'save_fields'
+            \Route::currentRouteName() !== 'mailboxes.custom_fields.ajax'
+            || $request->input('action') !== 'save_fields'
         ) {
-            try {
-                $readonly_ids = \DB::table('custom_fields')
+            return $next($request);
+        }
+
+        try {
+            $readonly_ids = \Cache::remember('cfro_protected_ids', 300, function () {
+                return \DB::table('custom_fields')
                     ->where(function ($q) {
                         $q->where('readonly', true)->orWhere('hide_from_ui', true);
                     })
                     ->pluck('id')
                     ->map(fn($id) => (string) $id)
                     ->toArray();
+            });
 
-                if (!empty($readonly_ids)) {
-                    $fields = $request->input('fields', []);
+            if (!empty($readonly_ids)) {
+                $fields = $request->input('fields', []);
 
-                    foreach (array_keys($fields) as $key) {
-                        // Keys may look like "123" or "123[" (multiselect notation).
-                        $field_id = rtrim((string) $key, '[');
-                        if (in_array($field_id, $readonly_ids, true)) {
-                            unset($fields[$key]);
-                        }
+                foreach (array_keys($fields) as $key) {
+                    // Keys may look like "123" or "123[" (multiselect notation).
+                    $field_id = rtrim((string) $key, '[');
+                    if (in_array($field_id, $readonly_ids, true)) {
+                        unset($fields[$key]);
                     }
-
-                    $request->merge(['fields' => $fields]);
                 }
-            } catch (\Exception $e) {
-                \Log::warning('CustomFieldsReadOnly: middleware failed to load readonly field ids', ['error' => $e->getMessage()]);
+
+                $request->merge(['fields' => $fields]);
             }
+        } catch (\Exception $e) {
+            \Log::warning('CustomFieldsReadOnly: middleware failed to load readonly field ids', ['error' => $e->getMessage()]);
         }
 
         return $next($request);

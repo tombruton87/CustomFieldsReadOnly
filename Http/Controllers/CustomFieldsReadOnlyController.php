@@ -39,6 +39,9 @@ class CustomFieldsReadOnlyController extends Controller
                     if ($updated === 0) {
                         $response['msg'] = __('Custom Field not found');
                     } else {
+                        $mailbox_id = \DB::table('custom_fields')->where('id', $custom_field_id)->value('mailbox_id');
+                        \Cache::forget('cfro_protected_ids');
+                        \Cache::forget('cfro_conv_flags_' . (int) $mailbox_id);
                         $response['status']      = 'success';
                         $response['msg_success'] = $readonly
                             ? __('Field set to API only')
@@ -68,6 +71,9 @@ class CustomFieldsReadOnlyController extends Controller
                     if ($updated === 0) {
                         $response['msg'] = __('Custom Field not found');
                     } else {
+                        $mailbox_id = \DB::table('custom_fields')->where('id', $custom_field_id)->value('mailbox_id');
+                        \Cache::forget('cfro_protected_ids');
+                        \Cache::forget('cfro_conv_flags_' . (int) $mailbox_id);
                         $response['status']      = 'success';
                         $response['msg_success'] = $hide_from_ui
                             ? __('Field hidden from ticket view')

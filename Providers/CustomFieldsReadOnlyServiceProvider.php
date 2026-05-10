@@ -101,15 +101,18 @@ class CustomFieldsReadOnlyServiceProvider extends ServiceProvider
                         );
                     }
 
-                    $query = \DB::table('custom_fields')
-                        ->where(function ($q) {
-                            $q->where('readonly', true)->orWhere('hide_from_ui', true);
-                        });
-                    if ($mailbox_id) {
-                        $query->where('mailbox_id', $mailbox_id);
-                    }
+                    $rows = \Cache::remember('cfro_conv_flags_' . $mailbox_id, 300, function () use ($mailbox_id) {
+                        $query = \DB::table('custom_fields')
+                            ->where(function ($q) {
+                                $q->where('readonly', true)->orWhere('hide_from_ui', true);
+                            });
+                        if ($mailbox_id) {
+                            $query->where('mailbox_id', $mailbox_id);
+                        }
+                        return $query->select('id', 'readonly', 'hide_from_ui')->get();
+                    });
 
-                    foreach ($query->select('id', 'readonly', 'hide_from_ui')->get() as $row) {
+                    foreach ($rows as $row) {
                         if ($row->readonly)     $readonly_ids[] = $row->id;
                         if ($row->hide_from_ui) $hidden_ids[]   = $row->id;
                     }
