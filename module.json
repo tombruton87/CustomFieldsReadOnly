@@ -1,0 +1,22 @@
+{
+    "name": "Custom Fields Read Only",
+    "alias": "customfieldsreadonly",
+    "description": "Extends Custom Fields to allow marking fields as API-only (read-only for users in the UI).",
+    "version": "1.0.0",
+    "author": "Tom Bruton",
+    "authorUrl": "https://tombruton.uk",
+    "requiredAppVersion": "1.8.181",
+    "license": "MIT",
+    "keywords": [],
+    "img": "/modules/customfieldsreadonly/img/logo.png",
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\CustomFieldsReadOnly\\Providers\\CustomFieldsReadOnlyServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": ["customfields"]
+}

@@ -1,0 +1,33 @@
+/* Custom Fields Read Only */
+
+/* Conversation view: muted, non-interactive field */
+#custom-fields-form .cfro-readonly :input,
+#custom-fields-form .cfro-readonly :input[disabled] {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    color: #888;
+    border-color: #ddd;
+}
+
+/* Prevent pointer events on select2 widgets inside readonly fields */
+#custom-fields-form .cfro-readonly .select2-container {
+    pointer-events: none;
+    opacity: 0.75;
+}
+
+/* "API Only" badge shown next to the field label */
+.cfro-badge {
+    font-size: 10px;
+    font-weight: normal;
+    vertical-align: middle;
+    background-color: #aaa;
+    color: #fff;
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin-left: 4px;
+}
+
+/* Admin page: slight highlight for the API-only toggle row */
+.cfro-readonly-group .onoffswitch-wrap {
+    margin-top: 6px;
+}

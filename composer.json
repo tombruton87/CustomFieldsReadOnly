@@ -1,0 +1,17 @@
+{
+    "name": "custom/customfieldsreadonly",
+    "description": "Custom Fields Read Only extension for FreeScout",
+    "authors": [],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\CustomFieldsReadOnly\\": ""
+        }
+    },
+    "require": {}
+}
