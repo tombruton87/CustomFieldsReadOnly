@@ -70,7 +70,7 @@ The module hooks into FreeScout's event system (Eventy) to:
 
 ## Author
 
-Built by [Hamlet Digital](https://hamlet.digital.co.uk)
+Built by [Hamlet Digital](https://hamlet-digital.co.uk)
 
 ## License
 
