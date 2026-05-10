@@ -43,6 +43,18 @@ Extends FreeScout's [Custom Fields](https://freescout.net/module/custom-fields/)
 | Normal | Editable as usual |
 | API Only | Field shown, inputs disabled, "API Only" badge displayed |
 | Hidden | Field not rendered at all |
+| Both | Field not rendered at all (hidden takes priority) |
+
+### Screenshots
+
+**API Only — field greyed out in the conversation view**
+![API Only field greyed out](https://github.com/user-attachments/assets/e8118a0c-8100-4108-bfaa-041d08d5c499)
+
+**Admin toggle — Hide from Ticket View**
+![Hide from Ticket View toggle](https://github.com/user-attachments/assets/ad94754d-298c-4fe0-9c9a-0ce5ae488773)
+
+**Admin toggle — API Only**
+![API Only toggle](https://github.com/user-attachments/assets/bbe776b6-560a-4840-85f2-787d246e062a)
 
 ### API behaviour
 
